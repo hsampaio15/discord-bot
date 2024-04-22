@@ -76,3 +76,66 @@ Similarly, we make retrieve the `Message` object of a reply for various reasons,
     console.log(message);
 
 ## 5 - Advanced command creation
+
+### Adding options
+
+Application commands can have additional options. Think of these options are argument to a function, and as a way for the user to provide the additional information the command requires.
+
+Options require, at minimum, a name and description, with the same restrictions that apply to slash command names. You can specify them as shwon in the `echo` command below, which prompt the user to enter a String for the `input` option.
+
+    const data = new SlashCommandBuilder()
+    .setName('echo')
+    .setDescription('Replies with your input!')
+    .addStringOption(option =>
+    	option.setName('input')
+    		.setDescription('The input to echo back'));
+
+### Option types
+
+By specifying the `type` of an option using the corresponding method, you are able to restrict what the user can provide as input, and for some options leverage the automatic parsing of options into proper objects by Discord.
+
+The example above used the `addStringOption` type, but there are several types:
+
+- `String`, `Integer`, `Number` and `Boolean` options all accept primitive values of their associated type.
+  - `Integer` only accepts whole numbers.
+  - `Number` accepts both whole numbers and decimals.
+- `User`, `Channel`, `Role` and `Mentionable` options will show a selection list in the Discord interface for their associated type, or will accept a Snowflake (id) as input.
+- `Attachment` options prompt the user to make an upload along with the slash command.
+- `Subcommand` and `SubcommandGroup` options allow you to have branching pathways of subsequent options for your commands - more on that later.
+
+### Required options and further validation
+
+With option types covered, you can start looking at forms of validation to ensure data your bot receives is both complete and accurate. The simplest addition is making options required, to ensure the command cannot be executed without a required value. This can be applied to options of any type. In the `echo` example again, we use `setRequired(true)` to make the `input` option as required.
+
+    const data = new SlashCommandBuilder()
+    .setName('echo')
+    .setDescription('Replies with your input!')
+    .addStringOption(option =>
+    	option.setName('input')
+    		.setDescription('The input to echo back')
+    		.setRequired(true));
+
+We can also specify `choices` for the `String`, `Number` and `Integer` types if a selection from a set of predetermined values is preferred. This is particularly useful when dealing with external datasets, APIs and similar, where specific input formats are required.
+
+We specify choices by using the `addChoices()` method from within the option builder. These require a `name` and a `value` that the bot will receive when that choice is selected. The `gif` command example below allows users to select from predetermined categories of gifs to send:
+
+    const data = new SlashCommandBuilder()
+    .setName('gif')
+    .setDescription('Sends a random gif!')
+    .addStringOption(option =>
+    	option.setName('category')
+    		.setDescription('The gif category')
+    		.setRequired(true)
+    		.addChoices(
+    			{ name: 'Funny', value: 'gif_funny' },
+    			{ name: 'Meme', value: 'gif_meme' },
+    			{ name: 'Movie', value: 'gif_movie' },
+    		));
+
+If we want an intermediate level of restrictions in place, we can exercise the following restrictions on free inputs:
+
+- `setMaxLength()` and `setMinLength()` can enforce length limitations for `String` options.
+- `setMaxValue()` and `setMindValue()` can enforce range limitations on the value of `Integer` and `Number` options.
+- `addChannelTypes()` can restrict selection to specific channel types, such as `ChannelType.GuildText`, for `Channel` options.
+
+## 6 - Parsing options
