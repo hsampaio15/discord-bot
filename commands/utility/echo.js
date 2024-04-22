@@ -23,8 +23,7 @@ module.exports = {
         .setDescription("Whether or not the echo should be embedded")
     ),
   async execute(interaction) {
-    await interaction.reply("Pong!");
-    const message = await interaction.fetchReply();
-    console.log(message.content);
+    const input = interaction.options.getString("input");
+    await interaction.reply(input);
   },
 };

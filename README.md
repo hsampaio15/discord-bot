@@ -207,3 +207,20 @@ If you specified preset choices for your options, getting the selected choice is
     };
 
 Note that nothing changes - you still use `getString()` to get the choice value. The only difference is that in this case, you can be sure it's one of only three possible values.
+
+## 7 - Slash command permissions
+
+Slash commands have their own permissions systems. This system allows you to se the default level of permissions required for a user to execute a command when it is first deployed or your bot is added to a new server.
+
+These are defaults only and can be altered by guild admins, allowing them to configure access however best suits their moderation and server roles. Your code should not try to enforce its own permission management, as this can result in a conflict between the server-configured permissions and your bot's code.
+
+For a ban command, a sensible default is to ensure that users already have the Discord permission `BanMembers` in order to use it. Likewise, for a kick command, we can allow memebers with the `KickMembers` premission to execute the command.
+
+> [!TIP]
+> You can require the user to hvae all of multiple permissions by merging them with the `|` bitwise OR operators (for example `PremissionFlagsBits.BanMembers | PermissionFlagsBits.KickMembers`)
+
+### DM permission
+
+By default, globally deployed commands are also availabe for use in DMs. You can use [`SlashCommandBuilder#setDMPermission()`](https://discord.js.org/docs/packages/builders/1.7.0/SlashCommandBuilder:Class#setDMPermission) to disable this behaviour. Commands deployed to specific guilds are not available in DMs.
+
+It doesn't make much sense for the `ban` command to be available in DMs, so you can add `setDMPermission(false)` to the builder to remove it.
