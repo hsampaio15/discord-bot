@@ -15,3 +15,9 @@ These steps can be done in any order, but **all are required** before the comman
 `module.exports` is how you export data in Node.js so that you can `require()` it in other files.
 
 If you need to access your client instance from inside a command file, you can access it via `interaction.client`. If you need to access external files, packages, etc., you should `require()` them at the top of the file.
+
+## 3 - Additional Modules
+
+- The `fs` module is Node's native file system module. It is used to read the `commands` directory and identify our command files.
+- The `path` module is Node's native path utility module. It helps construct paths to access files and directories. One of the advantages of the `path` module is that it automatically detects the operating system and uses the approporiate joiners.
+- The `Collection` class extends JavaScript's native `Map` class, and inclodes more extensive and useful functionality. It is used to store and efficiently retrieve commands for execution.
