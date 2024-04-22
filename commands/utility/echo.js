@@ -10,6 +10,7 @@ module.exports = {
         .setName("input")
         .setDescription("The input to echo back")
         .setMaxLength(2000)
+        .setRequired(true)
     )
     .addChannelOption((option) =>
       option

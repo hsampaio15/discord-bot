@@ -224,3 +224,89 @@ For a ban command, a sensible default is to ensure that users already have the D
 By default, globally deployed commands are also availabe for use in DMs. You can use [`SlashCommandBuilder#setDMPermission()`](https://discord.js.org/docs/packages/builders/1.7.0/SlashCommandBuilder:Class#setDMPermission) to disable this behaviour. Commands deployed to specific guilds are not available in DMs.
 
 It doesn't make much sense for the `ban` command to be available in DMs, so you can add `setDMPermission(false)` to the builder to remove it.
+
+## 8 - Autocomplete
+
+### Enabling autocomplete
+
+To enable autocomplete with your commands, _instead_ of listing static choices, the option must be set to use autocompletion using `SlashCommandStringOption#setAutocomplete()`:
+
+    	module.exports = {
+    cooldown: 5,
+    data: new SlashCommandBuilder()
+    	.setName("guide")
+    	.setDescription("Search discordjs.guide!")
+    	.addStringOption((option) =>
+    	option
+    		.setName("query")
+    		.setDescription("Phrase to search for")
+    		.setAutocomplete(true)
+    	),
+    async autocomplete(interaction) {
+    	// handle the autocompletion response (more on how to do that below)
+    },
+    async execute(interaction) {
+    	// respond to the complete slash command
+    },
+    };
+
+### Responding to autocomplete interactions
+
+To handle an `AutocompleteInteraction`, use the `BaseInteraction#isAutocomplete()` type guard to make sure the interaction instance is an autocomplate interaction. You can do this in a separate `interactionCreate` listener:
+
+    client.on(Events.InteractionCreate, interaction => {
+    if (!interaction.isAutocomplete()) return;
+    // do autocomplete handling
+    });
+
+Or alternatively, by making a small change to your existing Command handler and adding an additional method to your individual command files.
+
+### Sending results
+
+The `AutocompleteInteraction` class provides the `respond()` method to send a response. Using this, you can submit an array of `ApplicationCommandOptionChoiceData` objects for the user to choose from. Passing an emptry array will show "Mo options match your search" for the user.
+
+The `CommandInteractionOptionResolver#getFocused()` method returns the currently focused option's value, which can be used to apply filtering to the choices presented. For example, to only display options starting with the focused value, you can use the `Array#filter()` method, then using `Array#map()`, you can transform the array into an array of `ApplicationCommandOptionChoiceData` objects.
+
+    module.exports = {
+    cooldown: 5,
+    data: new SlashCommandBuilder()
+    	.setName("guide")
+    	.setDescription("Search discordjs.guide!")
+    	.addStringOption((option) =>
+    	option
+    		.setName("query")
+    		.setDescription("Phrase to search for")
+    		.setAutocomplete(true)
+    	),
+    async autocomplete(interaction) {
+    	const focusedValue = interaction.options.getFocused();
+    	const choices = [
+    	"Popular Topics: Threads",
+    	"Sharding: Getting started",
+    	"Library: Voice Connections",
+    	"Interactions: Replying to slash commands",
+    	"Popular Topics: Embed preview",
+    	];
+    	const filtered = choices.filter((choice) =>
+    	choice.startsWith(focusedValue)
+    	);
+    	await interaction.respond(
+    	filtered.map((choice) => ({ name: choice, value: choice }))
+    	);
+    },
+    async execute(interaction) {
+    	// respond to the complete slash command
+    },
+    };
+
+### Handling multple autocomplete options
+
+To distinguish between multiple options, you can pass `true` into `getFocused()`, which will now return the full focused object instead of just a value. This is used to get the name of the focused option below, allowing for multiple options to each have their own set of suggestions.
+
+    async autocomplete(interaction) {
+    	const focusedOption = interaction.options.getFocused(true);
+    	let choices;
+
+    	if (focusedOption.name === 'query') {
+    		choices = ['Popular Topics: Threads', 'Sharding: Getting started', 'Library: Voice Connections', 'Interactions: Replying to slash commands', 'Popular Topics: Embed preview'];
+    	}
