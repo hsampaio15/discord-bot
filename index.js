@@ -6,6 +6,7 @@ const { token } = require("./config.json");
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
+client.cooldowns = new Collection();
 client.commands = new Collection();
 
 ////////////////////////////////////////////
@@ -63,6 +64,9 @@ for (const file of eventFiles) {
     client.on(event.name, (...args) => event.execute(...args));
   }
 }
+
+// Key will be command names, values will be collections associating the user's id (key) to the last time (value)
+// this user used this command. Logical path = cooldowns > command > user > timestamp
 
 // Log in to Discord with your client's token
 client.login(token);
