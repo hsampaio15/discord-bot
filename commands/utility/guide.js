@@ -41,4 +41,11 @@ module.exports = {
       filtered.map((choice) => ({ name: choice, value: choice }))
     );
   },
+  async execute(interaction) {
+    await interaction.reply(
+      `You chose ${interaction.options.getString(
+        "query"
+      )}, but I'm not quite sure what to do with that yet.`
+    );
+  },
 };
