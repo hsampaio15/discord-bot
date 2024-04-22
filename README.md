@@ -139,3 +139,71 @@ If we want an intermediate level of restrictions in place, we can exercise the f
 - `addChannelTypes()` can restrict selection to specific channel types, such as `ChannelType.GuildText`, for `Channel` options.
 
 ## 6 - Parsing options
+
+### Command Options
+
+In this section, we will cover how to access the values of command's options. Consider the following `ban` command example with two options:
+
+    module.exports = {
+    data: new SlashCommandBuilder()
+    	.setName('ban')
+    	.setDescription('Select a member and ban them.')
+    	.addUserOption(option =>
+    		option
+    			.setName('target')
+    			.setDescription('The member to ban')
+    			.setRequired(true))
+    	.addStringOption(option =>
+    		option
+    			.setName('reason')
+    			.setDescription('The reason for banning'))
+    	.setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
+    	.setDMPermission(false),
+    };
+
+In the execute method, you can retrieve the value of these two options from the `CommandInteractionOptionResolver` as show below:
+
+    module.exports = {
+    // data: new SlashCommandBuilder()...
+    async execute(interaction) {
+    	const target = interaction.options.getUser('target');
+    	const reason = interaction.options.getString('reason') ?? 'No reason provided';
+
+    	await interaction.reply(`Banning ${target.username} for reason: ${reason}`);
+    	await interaction.guild.members.ban(target);
+    },
+    };
+
+Since `reason` isn't a require option, the example above uses the `??` [nullish coalescing operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing) to set a default value in the case the user does not supply a value for `reason`.
+
+If the target user is still in the guild where the command is being run, you can also use `.getMember('target')` to get their full `GuildMember` object.
+
+> [!TIP]
+> If you want the Snowflake of a structure instead, grab the object via `get()` and access the snowflake via the `value` property. Note that you should use `const { value: name } = ...` here to [destructure and rename](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment) the value obtained from the [`CommandInteractionOption'](https://old.discordjs.dev/#/docs/discord.js/14.14.1/typedef/CommandInteractionOption) structure to avoid identifier name conflicts.
+
+In the same way as the above examples, you can get values of any type using the corresponding `CommandInteractionOptionResolver#get_____()` method.
+
+### Choices
+
+If you specified preset choices for your options, getting the selected choice is exactly the same as above. Consider the gif command example from earlier:
+
+    module.exports = {
+    data: new SlashCommandBuilder()
+    	.setName('gif')
+    	.setDescription('Sends a random gif!')
+    	.addStringOption(option =>
+    		option.setName('category')
+    			.setDescription('The gif category')
+    			.setRequired(true)
+    			.addChoices(
+    				{ name: 'Funny', value: 'gif_funny' },
+    				{ name: 'Meme', value: 'gif_meme' },
+    				{ name: 'Movie', value: 'gif_movie' },
+    			)),
+    async execute(interaction) {
+    	const category = interaction.options.getString('category');
+    	// category must be one of 'gif_funny', 'gif_meme', or 'gif_movie'
+        },
+    };
+
+Note that nothing changes - you still use `getString()` to get the choice value. The only difference is that in this case, you can be sure it's one of only three possible values.
