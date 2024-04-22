@@ -41,8 +41,28 @@ for (const folder of commandFolders) {
     }
   }
 }
-
 //////////////////////////////////////////////////
+
+// Dynamically retrieve all the event files in the ./events/ folder, similarly to above.
+// Client class in discord.js extends the EventEmitter class, therefore the client object exposes the .on() and .once()
+// methods that you can use to register event listeners - these take two arguements, the name and callback function.
+const eventsPath = path.join(__dirname, "events");
+const eventFiles = fs
+  .readdirSync(eventsPath)
+  .filter((file) => file.endsWith(".js"));
+
+// Callback function collects arguments in args array using '...' rest parameter syntax, then calls event.execute()
+// while passing in the args array using the '...' spread syntax. These are used becuase different events in discord.js
+// have different numbers of arguments.
+for (const file of eventFiles) {
+  const filePath = path.join(eventsPath, file);
+  const event = require(filePath);
+  if (event.once) {
+    client.once(event.name, (...args) => event.execute(...args));
+  } else {
+    client.on(event.name, (...args) => event.execute(...args));
+  }
+}
 
 // Log in to Discord with your client's token
 client.login(token);
