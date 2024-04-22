@@ -53,3 +53,9 @@ client.once(Events.ClientReady, (readyClient) => {
 
 // Log in to Discord with your client's token
 client.login(token);
+
+// Executes code when the app receives an interaction
+client.on(Events.InteractionCreate, (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
+  console.log(interaction);
+});
