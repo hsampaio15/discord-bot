@@ -81,6 +81,10 @@ module.exports = {
       } catch (error) {
         console.error(error);
       }
+    } else if (interaction.isButton()) {
+      // respond to the button
+    } else if (interaction.isStringSelectMenu()) {
+      // respond to the select menu
     }
   },
 };
