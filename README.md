@@ -174,7 +174,7 @@ In the execute method, you can retrieve the value of these two options from the 
     },
     };
 
-Since `reason` isn't a require option, the example above uses the `??` [nullish coalescing operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing) to set a default value in the case the user does not supply a value for `reason`.
+Since `reason` isn't a required option, the example above uses the `??` [nullish coalescing operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing) to set a default value in the case the user does not supply a value for `reason`.
 
 If the target user is still in the guild where the command is being run, you can also use `.getMember('target')` to get their full `GuildMember` object.
 
