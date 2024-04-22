@@ -1,14 +1,12 @@
-// Require the necessary discord.js classes
-const { Client, Collection, Events, GatewayIntentBits } = require("discord.js");
-
 const fs = require("node:fs");
 const path = require("node:path");
+const { Client, Collection, Events, GatewayIntentBits } = require("discord.js");
 const { token } = require("./config.json");
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-Client.commands = new Collection();
+client.commands = new Collection();
 
 ////////////////////////////////////////////
 // Dynamically retrieve the command files
@@ -44,15 +42,14 @@ for (const folder of commandFolders) {
   }
 }
 
+//////////////////////////////////////////////////
+
 // When the client is ready, run this code (only once).
 // The distinction between 'client: Client<boolean>' and 'readyClient: Client<true>'
 //    is important for TypeScript developers
 client.once(Events.ClientReady, (readyClient) => {
   console.log("Ready! Logged in as ${readyClient.user.tag}");
 });
-
-// Log in to Discord with your client's token
-client.login(token);
 
 // Executes code when the app receives an interaction
 client.on(Events.InteractionCreate, async (interaction) => {
@@ -82,3 +79,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
   }
 });
+
+// Log in to Discord with your client's token
+client.login(token);
