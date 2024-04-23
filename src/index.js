@@ -1,4 +1,7 @@
 require("dotenv").config();
+const { gptChannels } = require("../config.json");
+const { OpenAI } = require("openai");
+
 const { Client, GatewayIntentBits, ActivityType } = require("discord.js");
 const eventHandler = require("./handlers/eventHandler.js");
 
@@ -11,6 +14,12 @@ const client = new Client({
     GatewayIntentBits.GuildMessages,
   ],
 });
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_KEY,
+});
+
+client.openai = openai;
 
 eventHandler(client);
 
