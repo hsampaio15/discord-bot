@@ -66,7 +66,6 @@ module.exports = {
         }
       }
     } else if (interaction.isAutocomplete()) {
-      if (!interaction.isAutocomplete()) return;
       const command = interaction.client.commands.get(interaction.commandName);
 
       if (!command) {
