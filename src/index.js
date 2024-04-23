@@ -16,14 +16,17 @@ client.on("ready", (c) => {
   console.log(`🐔 ${client.user.tag} is online.`);
 });
 
-// event listener for event 'messageCreate'
-client.on("messageCreate", (message) => {
-  // exit method if the message author is a bot
-  if (message.author.bot) return;
+client.on("interactionCreate", (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
 
-  // reply to a hello message
-  if (message.content === "hello") {
-    message.reply("Hey!");
+  if (interaction.commandName === "hey") {
+    interaction.reply("Hey!");
+  }
+
+  if (interaction.commandName === "add") {
+    const num1 = interaction.options.get("first-number").value;
+    const num2 = interaction.options.get("second-number").value;
+    interaction.reply(`The answer is ${num1 + num2}`);
   }
 });
 
