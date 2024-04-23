@@ -16,17 +16,31 @@ client.on("ready", (c) => {
   console.log(`🐔 ${client.user.tag} is online.`);
 });
 
-client.on("interactionCreate", (interaction) => {
-  if (!interaction.isChatInputCommand()) return;
+client.on("interactionCreate", async (interaction) => {
+  try {
+    if (!interaction.isButton) return;
 
-  if (interaction.commandName === "hey") {
-    interaction.reply("Hey!");
-  }
+    await interaction.deferReply({ ephemeral: true });
 
-  if (interaction.commandName === "add") {
-    const num1 = interaction.options.get("first-number").value;
-    const num2 = interaction.options.get("second-number").value;
-    interaction.reply(`The answer is ${num1 + num2}`);
+    const role = interaction.guild.roles.cache.get(interaction.customId);
+    if (!role) {
+      interaction.editReply({
+        content: "I couldn't find that role.",
+      });
+      return;
+    }
+
+    const hasRole = interaction.member.roles.cache.has(role.id);
+    if (hasRole) {
+      await interaction.member.roles.remove(role);
+      await interaction.editReply(`The role ${role} has been removed.`);
+      return;
+    }
+
+    await interaction.member.roles.add(role);
+    await interaction.editReply(`The role ${role} has been added.`);
+  } catch (error) {
+    console.log(error);
   }
 });
 
