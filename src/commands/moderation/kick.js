@@ -77,6 +77,7 @@ module.exports = {
     },
   ],
 
+  //test
   permissionsRequired: [PermissionFlagsBits.Administrator],
   botPermissions: [PermissionFlagsBits.Administrator],
 };
