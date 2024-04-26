@@ -17,10 +17,10 @@ const client = new Client({
   ],
 });
 
-// const openai = new OpenAI({
-//   apiKey: process.env.OPENAI_KEY,
-// });
-// client.openai = openai;
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_KEY,
+});
+client.openai = openai;
 
 const youtube = google.youtube({
   version: "v3",

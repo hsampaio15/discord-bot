@@ -62,8 +62,8 @@ module.exports = async (client, message) => {
 
   const response = await openai.chat.completions
     .create({
-      model: "gpt-4",
       messages: conversation,
+      model: "gpt-4",
     })
     .catch((error) => console.error("OpenAI Error:\n", error));
   clearInterval(sendTypingInterval);
